@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SOC Operations Center · Secured By Prem</title>
+<title>SOC Operations Center · Secure Access</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
 
@@ -22,8 +22,8 @@
   --red:#ff2d55;
   --warn:#ffab00;
   --t1:#e8f4ff;
-  --t2:#8ab4d4;
-  --t3:#3d6080;
+  --t2:#cfcfcf;
+  --t3:#cfcfcf;
   --mono:'Share Tech Mono',monospace;
   --head:'Orbitron',sans-serif;
   --body:'Rajdhani',sans-serif;
@@ -392,7 +392,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg)}
       </div>
       <div class="soc-title-block">
         <div class="soc-name">OPERATIONS CENTER</div>
-        <div class="soc-sub">Secured By Prem</div>
+        <div class="soc-sub">NSL-KDD · SECURE ACCESS PORTAL</div>
       </div>
     </div>
 
@@ -462,6 +462,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg)}
       <span>⚠</span><span id="errText">Invalid credentials — access denied</span>
     </div>
 
+    <div class="card-footer">
+      <span>DEFAULT CREDENTIALS: analyst name / <strong>soc123</strong> · admin / <strong>admin</strong></span>
+      <div class="security-badges">
+        <div class="sec-badge"><div class="sec-badge-dot"></div>TLS 1.3</div>
+        <div class="sec-badge"><div class="sec-badge-dot"></div>AES-256</div>
+        <div class="sec-badge"><div class="sec-badge-dot"></div>MFA READY</div>
+      </div>
+    </div>
   </div>
 
   <!-- Right deco panel -->
@@ -500,7 +508,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg)}
   <div class="bb-right">
     <div class="bb-item" id="bb-time"></div>
     <div class="bb-item">SOC OPS CENTER v6.0</div>
-    <div class="bb-item">SECURED BY PREM</div>
+    <div class="bb-item">NSL-KDD</div>
   </div>
 </div>
 
@@ -580,7 +588,7 @@ function doLogin(){
     btn.textContent = "✓ ACCESS GRANTED";
     err.classList.remove("show");
 
-    setTimeout(function(){ window.location.href = "index.html"; }, 700);
+    setTimeout(function(){ window.location.href = "dashboard.html"; }, 700);
   }, 900);
 }
 
@@ -606,7 +614,7 @@ document.addEventListener("DOMContentLoaded", function(){
   if(sess){
     try{
       var s = JSON.parse(sess);
-      if(s.expires > Date.now()){ window.location.href = "index.html"; return; }
+      if(s.expires > Date.now()){ window.location.href = "dashboard.html"; return; }
     }catch(e){}
   }
 
@@ -617,7 +625,7 @@ document.addEventListener("DOMContentLoaded", function(){
 function startClock(){
   function tick(){
     var d = new Date();
-    var str = d.toUTCString().replace("GMT","EST");
+    var str = d.toUTCString().replace("GMT","UTC");
     document.getElementById("clock-display").textContent = str;
     document.getElementById("bb-time").textContent = d.toLocaleTimeString();
   }
