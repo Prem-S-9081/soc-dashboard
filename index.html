@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<title>SOC Operations Center · Secured By Prem</title>
+<title>SOC Operations Center · NSL-KDD</title>
 <style>
 /* style.css — SOC Operations Center v6 · Professional Palette */
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
@@ -325,15 +325,15 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--san
     <div class="lg-icon">🛡️</div>
     <div>
       <div class="lg-name">SOC OPERATIONS CENTER</div>
-      <div class="lg-ver">Secured By Prem · v1.0</div>
+      <div class="lg-ver">NSL-KDD · v6.0</div>
     </div>
   </div>
   <div class="topbar-spacer"></div>
   <div class="topbar-actions">
     <button id="simulateBtn" class="btn bs">⚡ Simulate</button>
-    <button id="liveIndicator" class="btn bs"><span id="liveHeaderDot"></span> Live Feed</button>
+    <button id="liveIndicator"><span id="liveHeaderDot"></span> Live Feed</button>
     <div class="notif-wrap">
-      <button id="notifBtn" class="btn bs">🔔 Alerts<span id="nbadge" class="hidden"></span></button>
+      <button id="notifBtn">🔔 Alerts<span id="nbadge" class="hidden"></span></button>
       <div id="notifPanel" class="hidden">
         <div class="pnl-hdr"><span>Notifications</span><button class="xbtn" id="notifClose">✕</button></div>
         <div id="notifList" style="overflow-y:auto;flex:1;padding:8px"></div>
@@ -580,10 +580,23 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--san
 
 <script>
 // ===== CONFIG =====
+// Production: always use the Render backend URL
+window.RENDER_API_URL = "https://soc-dashboard-api.onrender.com";
 (function(){
-  var host=(window.location.hostname===''||window.location.hostname==='localhost')?'localhost':window.location.hostname;
-  window.API_BASE_URL='http://'+host+':8000';
-  window.WS_URL='ws://'+host+':8000/ws';
+  if(window.RENDER_API_URL){
+    window.API_BASE_URL = window.RENDER_API_URL.replace(/\/$/, "");
+    window.WS_URL       = window.RENDER_API_URL.replace(/\/$/, "")
+                            .replace(/^https/, "wss").replace(/^http/, "ws") + "/ws";
+  } else {
+    var host = (window.location.hostname==='' || window.location.hostname==='localhost')
+               ? 'localhost' : window.location.hostname;
+    var isLocal = (host==='localhost'||host==='127.0.0.1');
+    window.API_BASE_URL = isLocal ? 'http://localhost:8000'
+                                  : 'https://soc-dashboard-api.onrender.com';
+    window.WS_URL       = isLocal ? 'ws://localhost:8000/ws'
+                                  : 'wss://soc-dashboard-api.onrender.com/ws';
+  }
+  console.log("[config] API_BASE_URL =", window.API_BASE_URL);
 })();
 var SEVERITY_COLORS={critical:'#ef4444',high:'#f97316',medium:'#f59e0b',low:'#10b981',info:'#3b82f6'};
 var STATUS_COLORS={new:'#3b82f6',investigating:'#f59e0b',resolved:'#10b981',false_positive:'#64748b',escalated:'#ef4444'};
@@ -1942,22 +1955,40 @@ document.addEventListener("DOMContentLoaded",function(){
 // ── Data Load ─────────────────────────────────────────────────────────────────
 async function loadData(){
   var loaded=false;
+  // Render free tier can take up to 60s to wake from idle — show status in demo bar
+  var _demoBarEl=document.getElementById("demoBar");
+  var _origBarHtml=_demoBarEl?_demoBarEl.innerHTML:"";
   try{
     var ctrl=new AbortController();
-    var tid=setTimeout(function(){ctrl.abort();},5000);
+    // 65 second timeout — covers Render free tier cold start (up to ~50s)
+    var tid=setTimeout(function(){ctrl.abort();},65000);
+    // Show waking message after 3s if still waiting
+    var _wakeMsg=setTimeout(function(){
+      if(_demoBarEl){
+        _demoBarEl.classList.remove("hidden");
+        _demoBarEl.innerHTML="⏳ Waking up backend (Render free tier cold start — up to 60s)… please wait";
+      }
+    },3000);
     var fetchAlerts=fetch(API_BASE_URL+"/api/alerts",{signal:ctrl.signal,mode:"cors"});
     var fetchStats =fetch(API_BASE_URL+"/api/stats", {signal:ctrl.signal,mode:"cors"});
     var r1=await fetchAlerts;
     var r2=await fetchStats;
     clearTimeout(tid);
+    clearTimeout(_wakeMsg);
     if(r1.ok && r2.ok){
       var a=await r1.json();
       var s=await r2.json();
       if(Array.isArray(a) && a.length){
         alerts=a; stats=s; loaded=true;
+        // Restore demo bar to original state
+        if(_demoBarEl){ _demoBarEl.innerHTML=_origBarHtml; }
       }
     }
-  }catch(e){ /* network/CORS/timeout — fall through to demo */ }
+  }catch(e){
+    clearTimeout(_wakeMsg);
+    console.warn("[loadData] fetch error:",e.message||e);
+    /* network/CORS/timeout — fall through to demo */
+  }
 
   if(!loaded){
     if(!alerts.length){ alerts=genDemoAlerts(); }
