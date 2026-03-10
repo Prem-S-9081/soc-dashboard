@@ -337,17 +337,6 @@ Login flow:
   Expired / missing → redirect back to login.html
 ```
 
-**Default users:**
-
-| Username | Password | Role |
-|---|---|---|
-| `admin` | `admin` | Administrator |
-| `alice.chen` | `soc123` | Analyst |
-| `bob.martinez` | `soc123` | Analyst |
-| `carol.white` | `soc123` | Analyst |
-| `david.kim` | `soc123` | Analyst |
-| `eve.johnson` | `soc123` | Analyst |
-
 ---
 
 ## Data Flow
@@ -438,20 +427,8 @@ on: push (branch: main)
 
 **Custom domain setup:**
 1. `CNAME` file in repo root contains `soc.securedbyprem.com`
-2. GoDaddy DNS: `soc` CNAME → `Prem-S-9081.github.io`
 3. GitHub Pages settings: Custom domain + Enforce HTTPS
 
 ---
-
-## Default Credentials
-
-| Username | Password | Access Level |
-|---|---|---|
-| `admin` | `admin` | Full admin — user management, all features |
-| `alice.chen` | `soc123` | Analyst — alert handling, playbooks |
-| `bob.martinez` | `soc123` | Analyst |
-| `carol.white` | `soc123` | Analyst |
-| `david.kim` | `soc123` | Analyst |
-| `eve.johnson` | `soc123` | Analyst |
 
 > ⚠️ This project uses client-side authentication for demo purposes. Do not store sensitive or real data in this system.
