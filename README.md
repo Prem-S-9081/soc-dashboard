@@ -3,9 +3,6 @@
 > A professional, real-time Security Operations Center dashboard built with vanilla JavaScript, powered by NSL-KDD network intrusion detection data.
 
 **Live Demo:** [soc.securedbyprem.com](https://soc.securedbyprem.com)  
-**Backend API:** [soc-dashboard-api.onrender.com](https://soc-dashboard-api.onrender.com)  
-**Backend Repo:** [github.com/Prem-S-9081/soc-dashboard-api](https://github.com/Prem-S-9081/soc-dashboard-api)
-
 ---
 
 ## Table of Contents
