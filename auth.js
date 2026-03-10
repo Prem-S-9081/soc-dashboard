@@ -1,12 +1,12 @@
 // ===== AUTH MODULE =====
 // All helpers prefixed with _a to avoid any global name conflicts
 var DEFAULT_AUTH_USERS=[
-  {id:"admin",username:"admin",password:"admin",name:"Administrator",role:"Admin",shift:"24/7",color:"av-e",email:"admin@soc.io",isAdmin:true,active:true},
-  {id:"m1",username:"alice.chen",password:"soc123",name:"Alice Chen",role:"Senior Analyst",shift:"Day",color:"av-a",email:"alice@soc.io",isAdmin:false,active:true},
-  {id:"m2",username:"bob.martinez",password:"soc123",name:"Bob Martinez",role:"Threat Hunter",shift:"Day",color:"av-d",email:"bob@soc.io",isAdmin:false,active:true},
-  {id:"m3",username:"carol.white",password:"soc123",name:"Carol White",role:"IR Specialist",shift:"Night",color:"av-b",email:"carol@soc.io",isAdmin:false,active:true},
-  {id:"m4",username:"david.kim",password:"soc123",name:"David Kim",role:"Tier 2 Analyst",shift:"Day",color:"av-c",email:"david@soc.io",isAdmin:false,active:true},
-  {id:"m5",username:"eve.johnson",password:"soc123",name:"Eve Johnson",role:"Junior Analyst",shift:"Night",color:"av-e",email:"eve@soc.io",isAdmin:false,active:true}
+  {id:"admin",username:"admin",password:"Securedbyprem@123",name:"Administrator",role:"Admin",shift:"24/7",color:"av-e",email:"admin@sp.com",isAdmin:true,active:true},
+  {id:"m1",username:"prem.ps",password:"Prem@123",name:"Prem Santhanam",role:"Senior Analyst",shift:"Day",color:"av-a",email:"prem@ps.com",isAdmin:false,active:true},
+  {id:"m2",username:"shivani.ps",password:"Shivani@123",name:"Shivani PS",role:"SOC Manager",shift:"Day",color:"av-d",email:"shivani@sp.com",isAdmin:false,active:true},
+  {id:"m3",username:"himaja.vellanki",password:"Himaja@123",name:"Himaja Vellanki",role:"Malware Analyst",shift:"Night",color:"av-b",email:"himaja@sp.com",isAdmin:false,active:true},
+  {id:"m4",username:"mika.patel",password:"Mika@123",name:"Mika Patel",role:"Tier 2 Analyst",shift:"Weekend",color:"av-c",email:"mika@sp.com",isAdmin:false,active:true},
+  {id:"m5",username:"sahithi.d",password:"Sahithi@123",name:"Sahithi",role:"Junior Analyst",shift:"Night",color:"av-e",email:"sahithi@sp.com",isAdmin:false,active:true}
 ];
 var ALL_ROLES=["Admin","Senior Analyst","Threat Hunter","IR Specialist","Tier 2 Analyst","Junior Analyst","SOC Manager","Forensic Analyst","Malware Analyst"];
 var ALL_SHIFTS=["Day","Night","Weekend","24/7"];
@@ -528,4 +528,5 @@ function authChangePassword(){
     users[idx].password=nw;_saveUsers(users);closeModal();
     if(typeof addNotification==="function")addNotification("🔑 Password updated");
   }},{label:"Cancel",cls:"bs",fn:closeModal}]);
+
 }
