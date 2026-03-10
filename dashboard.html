@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<title>SOC Operations Center · NSL-KDD</title>
+<title>SOC Operations Center · SECURED BY PREM</title>
 <style>
 /* style.css — SOC Operations Center v6 · Professional Palette */
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
@@ -608,12 +608,12 @@ var PALETTE=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#f97316','#06b6d
 // ===== AUTH MODULE =====
 // All helpers prefixed with _a to avoid any global name conflicts
 var DEFAULT_AUTH_USERS=[
-  {id:"admin",username:"admin",password:"admin",name:"Administrator",role:"Admin",shift:"24/7",color:"av-e",email:"admin@soc.io",isAdmin:true,active:true},
-  {id:"m1",username:"alice.chen",password:"soc123",name:"Alice Chen",role:"Senior Analyst",shift:"Day",color:"av-a",email:"alice@soc.io",isAdmin:false,active:true},
-  {id:"m2",username:"bob.martinez",password:"soc123",name:"Bob Martinez",role:"Threat Hunter",shift:"Day",color:"av-d",email:"bob@soc.io",isAdmin:false,active:true},
-  {id:"m3",username:"carol.white",password:"soc123",name:"Carol White",role:"IR Specialist",shift:"Night",color:"av-b",email:"carol@soc.io",isAdmin:false,active:true},
-  {id:"m4",username:"david.kim",password:"soc123",name:"David Kim",role:"Tier 2 Analyst",shift:"Day",color:"av-c",email:"david@soc.io",isAdmin:false,active:true},
-  {id:"m5",username:"eve.johnson",password:"soc123",name:"Eve Johnson",role:"Junior Analyst",shift:"Night",color:"av-e",email:"eve@soc.io",isAdmin:false,active:true}
+  {id:"admin",username:"admin",password:"Securedbyprem@123",name:"Administrator",role:"Admin",shift:"24/7",color:"av-e",email:"admin@sp.com",isAdmin:true,active:true},
+  {id:"m1",username:"prem.ps",password:"Prem@123",name:"Prem Santhanam",role:"Senior Analyst",shift:"Day",color:"av-a",email:"prem@sp.com",isAdmin:false,active:true},
+  {id:"m2",username:"shivani.ps",password:"Shivani@123",name:"Shivani PS",role:"SOC Manager",shift:"Day",color:"av-d",email:"shivani@sp.com",isAdmin:false,active:true},
+  {id:"m3",username:"himaja.vellanki",password:"Himaja@123",name:"Himaja Vellanki",role:"Malware Analyst",shift:"Night",color:"av-b",email:"himaja@sp.com",isAdmin:false,active:true},
+  {id:"m4",username:"mika.patel",password:"Mika@123",name:"Mika Patel",role:"Tier 2 Analyst",shift:"Day",color:"av-c",email:"mika@sp.com",isAdmin:false,active:true},
+  {id:"m5",username:"sahithi.d",password:"Sahithi@123",name:"Sahithi",role:"Junior Analyst",shift:"Night",color:"av-e",email:"sahithi@sp.com",isAdmin:false,active:true}
 ];
 var ALL_ROLES=["Admin","Senior Analyst","Threat Hunter","IR Specialist","Tier 2 Analyst","Junior Analyst","SOC Manager","Forensic Analyst","Malware Analyst"];
 var ALL_SHIFTS=["Day","Night","Weekend","24/7"];
@@ -1921,11 +1921,11 @@ try{groups=JSON.parse(localStorage.getItem("soc_groups")||"null");}catch(e){grou
 try{overrides=JSON.parse(localStorage.getItem("soc_overrides")||"{}");}catch(e){overrides={};}
 
 var DEFAULT_MEMBERS=[
-  {id:"m1",name:"Alice Chen",  role:"Senior Analyst",    shift:"Day",  color:"av-a",email:"alice@soc.io"},
-  {id:"m2",name:"Bob Martinez",role:"Threat Hunter",     shift:"Day",  color:"av-d",email:"bob@soc.io"},
-  {id:"m3",name:"Carol White", role:"IR Specialist",     shift:"Night",color:"av-b",email:"carol@soc.io"},
-  {id:"m4",name:"David Kim",   role:"Tier 2 Analyst",   shift:"Day",  color:"av-c",email:"david@soc.io"},
-  {id:"m5",name:"Eve Johnson", role:"Junior Analyst",    shift:"Night",color:"av-e",email:"eve@soc.io"},
+  {id:"m1",name:"Prem Santhanam",  role:"Senior Analyst",    shift:"Day",  color:"av-a",email:"prem@sp.com"},
+  {id:"m2",name:"Shivani PS",role:"SOC Managaer",     shift:"Day",  color:"av-d",email:"shivani@sp.com"},
+  {id:"m3",name:"Himaja Vellanki", role:"Malware Analyst",     shift:"Night",color:"av-b",email:"himaja@sp.com"},
+  {id:"m4",name:"Mika Patel",   role:"Tier 2 Analyst",   shift:"Weekend",  color:"av-c",email:"mika@sp.com"},
+  {id:"m5",name:"Sahithi", role:"Junior Analyst",    shift:"Night",color:"av-e",email:"sahithi@sp.com"},
 ];
 var DEFAULT_GROUPS=[
   {id:"g1",name:"Day Shift",         icon:"☀️",color:"#f59e0b",members:["m1","m2","m4"]},
@@ -2027,7 +2027,7 @@ function genDemoAlerts(){
   var SERVICES=["http","ftp","ssh","smtp","domain","telnet","other","private","sql_net","finger"];
   var FLAGS=["SF","S0","REJ","RSTO","S1","OTH"];
   var STATUS_P=["new","new","new","new","investigating","investigating","investigating","resolved","resolved","false_positive","escalated"];
-  var ANALYSTS=["Alice Chen","Bob Martinez","Carol White","David Kim","Eve Johnson"];
+  var ANALYSTS=["Prem Santhanam","Shivani PS","Himaja Vellanki","Mika Patel","Sahithi"];
   var RECOMMENDED={"dos_attack":"Block attacking IPs, activate rate-limiting, engage upstream scrubbing","port_scan":"Block recon IP, audit exposed services, review firewall rules","brute_force":"Block source IP, enforce MFA, reset affected credentials","web_attack":"Update WAF rules, patch vulnerable endpoints, review logs","sql_injection":"Sanitise inputs, rotate DB credentials, audit schema","malware_detection":"Isolate host immediately, capture memory image, run forensic analysis","data_exfiltration":"Block egress channel, preserve forensic evidence, notify data owner","vulnerability_exploit":"Apply patch immediately, isolate affected host, scan for lateral movement"};
   var now=Date.now(); var alerts=[];
   for(var i=0;i<100;i++){
@@ -2117,7 +2117,7 @@ function getTeamNames(){
   try{stored=JSON.parse(localStorage.getItem("soc_members"));}catch(e){}
   if(stored&&stored.length) return stored.map(function(m){return m.name;});
   /* fallback — default analysts hardcoded as safety net */
-  return ["Alice Chen","Bob Martinez","Carol White","David Kim","Eve Johnson"];
+  return ["Prem Santhanam","Shivani PS","Himaja Vellanki","Mika Patel","Sahithi"];
 }
 
 function reassignAlerts(alertList){
@@ -3167,3 +3167,4 @@ function bindControls(){
 
 </body>
 </html>
+
