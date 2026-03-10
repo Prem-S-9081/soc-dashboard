@@ -8,11 +8,11 @@ var groups=JSON.parse(localStorage.getItem("soc_groups")||"null");
 overrides=JSON.parse(localStorage.getItem("soc_overrides")||"{}");
 
 var DEFAULT_MEMBERS=[
-  {id:"m1",name:"Alice Chen",  role:"Senior Analyst",    shift:"Day",  color:"av-a",email:"alice@soc.io"},
-  {id:"m2",name:"Bob Martinez",role:"Threat Hunter",     shift:"Day",  color:"av-d",email:"bob@soc.io"},
-  {id:"m3",name:"Carol White", role:"IR Specialist",     shift:"Night",color:"av-b",email:"carol@soc.io"},
-  {id:"m4",name:"David Kim",   role:"Tier 2 Analyst",   shift:"Day",  color:"av-c",email:"david@soc.io"},
-  {id:"m5",name:"Eve Johnson", role:"Junior Analyst",    shift:"Night",color:"av-e",email:"eve@soc.io"},
+  {id:"m1",name:"Prem Santhanam",  role:"Senior Analyst",    shift:"Day",  color:"av-a",email:"prem@sp.com"},
+  {id:"m2",name:"Shivani PS",role:"SOC Manager",     shift:"Day",  color:"av-d",email:"shivani@sp.com"},
+  {id:"m3",name:"Himaja Vellanki", role:"Malware Analyst",     shift:"Night",color:"av-b",email:"himaja@sp.com"},
+  {id:"m4",name:"Mika Patel",   role:"Tier 2 Analyst",   shift:"Weekend",  color:"av-c",email:"mika@sp.com"},
+  {id:"m5",name:"Sahithi", role:"Junior Analyst",    shift:"Night",color:"av-e",email:"sahithi@sp.com"},
 ];
 var DEFAULT_GROUPS=[
   {id:"g1",name:"Day Shift",         icon:"☀️",color:"#f59e0b",members:["m1","m2","m4"]},
@@ -1075,4 +1075,5 @@ function bindControls(){
   var nc=g("notifClose");if(nc)nc.addEventListener("click",function(){if(g("notifPanel"))g("notifPanel").classList.add("hidden");});
   document.addEventListener("click",function(e){var np=g("notifPanel");var nb2=g("notifBtn");if(np&&!np.classList.contains("hidden")&&!np.contains(e.target)&&e.target!==nb2)np.classList.add("hidden");});
   var simBtn=g("simulateBtn");if(simBtn)simBtn.addEventListener("click",function(){fetch(API_BASE_URL+"/api/alerts/simulate",{method:"POST"});});
+
 }
