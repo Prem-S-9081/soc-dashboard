@@ -331,9 +331,9 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--san
   <div class="topbar-spacer"></div>
   <div class="topbar-actions">
     <button id="simulateBtn" class="btn bs">⚡ Simulate</button>
-    <button id="liveIndicator"><span id="liveHeaderDot"></span> Live Feed</button>
+    <button id="liveIndicator" class="btn bs"><span id="liveHeaderDot"></span> Live Feed</button>
     <div class="notif-wrap">
-      <button id="notifBtn">🔔 Alerts<span id="nbadge" class="hidden"></span></button>
+      <button id="notifBtn" class="btn bs">🔔 Alerts<span id="nbadge" class="hidden"></span></button>
       <div id="notifPanel" class="hidden">
         <div class="pnl-hdr"><span>Notifications</span><button class="xbtn" id="notifClose">✕</button></div>
         <div id="notifList" style="overflow-y:auto;flex:1;padding:8px"></div>
@@ -430,7 +430,7 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--san
 <div class="view hidden" id="v-analytics">
   <div style="display:flex;align-items:center;margin-bottom:12px">
     <div style="font-size:16px;font-weight:700">📊 Threat Analytics</div>
-    <span style="font-size:11px;color:var(--t3);font-weight:400;margin-left:8px">NSL-KDD</span>
+    <span style="font-size:11px;color:var(--t3);font-weight:400;margin-left:8px">NSL-KDD Dataset</span>
   </div>
   <div id="anaKpi"></div>
   <div id="anaGrid1"></div>
@@ -1202,7 +1202,7 @@ function updateLiveFeedUI(){
 var amState={data:[],filterType:"all",selectedCountry:null,ready:false};
 var _g={scene:null,cam:null,ren:null,globe:null,atmos:null,grat:null,
         markers:[],arcs:[],stars:null,
-        dragging:false,sx:0,sy:0,rx:0,ry:0,trx:0,try_:0,
+        dragging:true,sx:0,sy:0,rx:0,ry:0,trx:0,try_:0,
         autoRot:true,rotSpd:0.0008,
         zoom:2.6,minZ:1.6,maxZ:5.8,
         theme:"cyber",animId:null,t0:Date.now(),R:1.0};
@@ -2873,7 +2873,7 @@ function generateShiftReport(){
       '<div class="rpt-stripe"></div>'+
       '<div class="rpt-hdr-body">'+
         '<div>'+
-          '<div style="font-size:9px;font-family:var(--mono);color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">Security Operations Center · Shift Handover Report</div>'+
+          '<div style="font-size:9px;font-family:var(--mono);color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">Security Operations Center · Shift Handover Report · Secured By Prem</div>'+
           '<div style="font-size:22px;font-weight:700;letter-spacing:-.4px">Threat Assessment & Incident Analysis</div>'+
           '<div style="font-size:10px;color:var(--t3);margin-top:5px;font-family:var(--mono)">'+
             'Generated: '+new Date().toLocaleString()+' · NSL-KDD Dataset · CONFIDENTIAL'+
@@ -2948,7 +2948,7 @@ function generateShiftReport(){
        ["rs-low","Housekeeping",["Archive confirmed false positives","Review detection model accuracy trends","Document new attack patterns observed"]],
       ].map(function(s){return '<div style="margin-bottom:11px"><div class="rfind"><span class="rsev '+s[0]+'">'+s[1].toUpperCase()+'</span><ul style="margin-top:8px;padding-left:18px">'+s[2].map(function(i){return '<li style="font-size:11px;color:var(--t2);margin-bottom:4px">'+i+'</li>';}).join("")+'</ul></div></div>';}).join("")+
     '</div></div>'+
-    '<div style="text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);padding:8px 0">Generated '+new Date().toISOString()+' · SOC Operations Center · NSL-KDD · CONFIDENTIAL</div>';
+    '<div style="text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);padding:8px 0">Generated '+new Date().toISOString()+' · SOC Operations Center · SECURED BY PREM · CONFIDENTIAL</div>';
 
   // Wire up click handlers for report rows
   el.querySelectorAll(".rpt-alert-row").forEach(function(row){
@@ -3167,5 +3167,6 @@ function bindControls(){
 
 </body>
 </html>
+
 
 
