@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-<title>SOC Operations Center · SECURED BY PREM</title>
+<title>SOC Operations Center · NSL-KDD</title>
 <style>
 /* style.css — SOC Operations Center v6 · Professional Palette */
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
@@ -20,8 +20,8 @@
   --b1:  rgba(30,55,90,.5);  /* border 1 */
   --b2:  rgba(30,55,90,.35); /* border 2 */
   --t1:  #e2e8f0;
-  --t2:  #cfcfcf;
-  --t3:  #cfcfcf;
+  --t2:  #94a3b8;
+  --t3:  #475569;
   --blue:  #3b82f6;
   --blue2: #60a5fa;
   --green: #10b981;
@@ -325,15 +325,15 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--san
     <div class="lg-icon">🛡️</div>
     <div>
       <div class="lg-name">SOC OPERATIONS CENTER</div>
-      <div class="lg-ver">SECURED BY PREM · v2.0</div>
+      <div class="lg-ver">NSL-KDD · v6.0</div>
     </div>
   </div>
   <div class="topbar-spacer"></div>
   <div class="topbar-actions">
     <button id="simulateBtn" class="btn bs">⚡ Simulate</button>
-    <button id="liveIndicator" class="btn bs"><span id="liveHeaderDot"></span> Live Feed</button>
+    <button id="liveIndicator"><span id="liveHeaderDot"></span> Live Feed</button>
     <div class="notif-wrap">
-      <button id="notifBtn" class="btn bs">🔔 Alerts<span id="nbadge" class="hidden"></span></button>
+      <button id="notifBtn">🔔 Alerts<span id="nbadge" class="hidden"></span></button>
       <div id="notifPanel" class="hidden">
         <div class="pnl-hdr"><span>Notifications</span><button class="xbtn" id="notifClose">✕</button></div>
         <div id="notifList" style="overflow-y:auto;flex:1;padding:8px"></div>
@@ -430,7 +430,7 @@ html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--san
 <div class="view hidden" id="v-analytics">
   <div style="display:flex;align-items:center;margin-bottom:12px">
     <div style="font-size:16px;font-weight:700">📊 Threat Analytics</div>
-    <span style="font-size:11px;color:var(--t3);font-weight:400;margin-left:8px">NSL-KDD Dataset</span>
+    <span style="font-size:11px;color:var(--t3);font-weight:400;margin-left:8px">NSL-KDD</span>
   </div>
   <div id="anaKpi"></div>
   <div id="anaGrid1"></div>
@@ -608,12 +608,12 @@ var PALETTE=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#f97316','#06b6d
 // ===== AUTH MODULE =====
 // All helpers prefixed with _a to avoid any global name conflicts
 var DEFAULT_AUTH_USERS=[
-  {id:"admin",username:"admin",password:"Securedbyprem@123",name:"Administrator",role:"Admin",shift:"24/7",color:"av-e",email:"admin@sp.com",isAdmin:true,active:true},
-  {id:"m1",username:"prem.ps",password:"Prem@123",name:"Prem Santhanam",role:"Senior Analyst",shift:"Day",color:"av-a",email:"prem@sp.com",isAdmin:false,active:true},
-  {id:"m2",username:"shivani.ps",password:"Shivani@123",name:"Shivani PS",role:"SOC Manager",shift:"Day",color:"av-d",email:"shivani@sp.com",isAdmin:false,active:true},
-  {id:"m3",username:"himaja.vellanki",password:"Himaja@123",name:"Himaja Vellanki",role:"Malware Analyst",shift:"Night",color:"av-b",email:"himaja@sp.com",isAdmin:false,active:true},
-  {id:"m4",username:"mika.patel",password:"Mika@123",name:"Mika Patel",role:"Tier 2 Analyst",shift:"Day",color:"av-c",email:"mika@sp.com",isAdmin:false,active:true},
-  {id:"m5",username:"sahithi.d",password:"Sahithi@123",name:"Sahithi",role:"Junior Analyst",shift:"Night",color:"av-e",email:"sahithi@sp.com",isAdmin:false,active:true}
+  {id:"admin",username:"admin",password:"admin",name:"Administrator",role:"Admin",shift:"24/7",color:"av-e",email:"admin@soc.io",isAdmin:true,active:true},
+  {id:"m1",username:"alice.chen",password:"soc123",name:"Alice Chen",role:"Senior Analyst",shift:"Day",color:"av-a",email:"alice@soc.io",isAdmin:false,active:true},
+  {id:"m2",username:"bob.martinez",password:"soc123",name:"Bob Martinez",role:"Threat Hunter",shift:"Day",color:"av-d",email:"bob@soc.io",isAdmin:false,active:true},
+  {id:"m3",username:"carol.white",password:"soc123",name:"Carol White",role:"IR Specialist",shift:"Night",color:"av-b",email:"carol@soc.io",isAdmin:false,active:true},
+  {id:"m4",username:"david.kim",password:"soc123",name:"David Kim",role:"Tier 2 Analyst",shift:"Day",color:"av-c",email:"david@soc.io",isAdmin:false,active:true},
+  {id:"m5",username:"eve.johnson",password:"soc123",name:"Eve Johnson",role:"Junior Analyst",shift:"Night",color:"av-e",email:"eve@soc.io",isAdmin:false,active:true}
 ];
 var ALL_ROLES=["Admin","Senior Analyst","Threat Hunter","IR Specialist","Tier 2 Analyst","Junior Analyst","SOC Manager","Forensic Analyst","Malware Analyst"];
 var ALL_SHIFTS=["Day","Night","Weekend","24/7"];
@@ -1202,7 +1202,7 @@ function updateLiveFeedUI(){
 var amState={data:[],filterType:"all",selectedCountry:null,ready:false};
 var _g={scene:null,cam:null,ren:null,globe:null,atmos:null,grat:null,
         markers:[],arcs:[],stars:null,
-        dragging:true,sx:0,sy:0,rx:0,ry:0,trx:0,try_:0,
+        dragging:false,sx:0,sy:0,rx:0,ry:0,trx:0,try_:0,
         autoRot:true,rotSpd:0.0008,
         zoom:2.6,minZ:1.6,maxZ:5.8,
         theme:"cyber",animId:null,t0:Date.now(),R:1.0};
@@ -1917,15 +1917,46 @@ var notifs=[], overrides={}, demoMode=false;
 var currentPage=1, PAGE_SIZE=50;
 var members=null,groups=null;
 try{members=JSON.parse(localStorage.getItem("soc_members")||"null");}catch(e){members=null;}
+
+// ── Real-time update handler — called by live-feed.js when alert_updated WS msg arrives ──
+function onAlertUpdated(d){
+  if(!d||!d.alert_id||!d.changes) return;
+  var chg=d.changes;
+
+  // Patch master alerts array in-place
+  var idx=alerts.findIndex(function(x){return x.alert_id===d.alert_id;});
+  if(idx>=0){
+    if(chg.status)               alerts[idx].status              = chg.status;
+    if(chg.assigned_to)          alerts[idx].assigned_to         = chg.assigned_to;
+    if(chg.custom_title)         alerts[idx].custom_title         = chg.custom_title;
+    if(chg.custom_description)   alerts[idx].custom_description   = chg.custom_description;
+    if(chg.playbook_result)      alerts[idx].playbook_result      = chg.playbook_result;
+    if(chg.history)              alerts[idx].history              = chg.history;
+  }
+
+  // Patch overrides so filter/status display stays in sync
+  if(!overrides[d.alert_id]) overrides[d.alert_id]={};
+  if(chg.status)      overrides[d.alert_id].status   = chg.status;
+  if(chg.assigned_to) overrides[d.alert_id].assignee = chg.assigned_to;
+
+  // Re-render silently — no page reset, no scroll jump
+  applyFilters();
+  if(typeof renderStats==="function") renderStats(typeof stats!=="undefined"?stats:{});
+
+  // Notify the current user
+  var who = chg.assigned_to ? (" → "+chg.assigned_to) : "";
+  var st  = chg.status      ? (" ["+chg.status+"]")   : "";
+  addNotification("🔄 "+d.alert_id+st+who+" (updated by another analyst)");
+}
 try{groups=JSON.parse(localStorage.getItem("soc_groups")||"null");}catch(e){groups=null;}
 try{overrides=JSON.parse(localStorage.getItem("soc_overrides")||"{}");}catch(e){overrides={};}
 
 var DEFAULT_MEMBERS=[
-  {id:"m1",name:"Prem Santhanam",  role:"Senior Analyst",    shift:"Day",  color:"av-a",email:"prem@sp.com"},
-  {id:"m2",name:"Shivani PS",role:"SOC Managaer",     shift:"Day",  color:"av-d",email:"shivani@sp.com"},
-  {id:"m3",name:"Himaja Vellanki", role:"Malware Analyst",     shift:"Night",color:"av-b",email:"himaja@sp.com"},
-  {id:"m4",name:"Mika Patel",   role:"Tier 2 Analyst",   shift:"Weekend",  color:"av-c",email:"mika@sp.com"},
-  {id:"m5",name:"Sahithi", role:"Junior Analyst",    shift:"Night",color:"av-e",email:"sahithi@sp.com"},
+  {id:"m1",name:"Alice Chen",  role:"Senior Analyst",    shift:"Day",  color:"av-a",email:"alice@soc.io"},
+  {id:"m2",name:"Bob Martinez",role:"Threat Hunter",     shift:"Day",  color:"av-d",email:"bob@soc.io"},
+  {id:"m3",name:"Carol White", role:"IR Specialist",     shift:"Night",color:"av-b",email:"carol@soc.io"},
+  {id:"m4",name:"David Kim",   role:"Tier 2 Analyst",   shift:"Day",  color:"av-c",email:"david@soc.io"},
+  {id:"m5",name:"Eve Johnson", role:"Junior Analyst",    shift:"Night",color:"av-e",email:"eve@soc.io"},
 ];
 var DEFAULT_GROUPS=[
   {id:"g1",name:"Day Shift",         icon:"☀️",color:"#f59e0b",members:["m1","m2","m4"]},
@@ -2027,7 +2058,7 @@ function genDemoAlerts(){
   var SERVICES=["http","ftp","ssh","smtp","domain","telnet","other","private","sql_net","finger"];
   var FLAGS=["SF","S0","REJ","RSTO","S1","OTH"];
   var STATUS_P=["new","new","new","new","investigating","investigating","investigating","resolved","resolved","false_positive","escalated"];
-  var ANALYSTS=["Prem Santhanam","Shivani PS","Himaja Vellanki","Mika Patel","Sahithi"];
+  var ANALYSTS=["Alice Chen","Bob Martinez","Carol White","David Kim","Eve Johnson"];
   var RECOMMENDED={"dos_attack":"Block attacking IPs, activate rate-limiting, engage upstream scrubbing","port_scan":"Block recon IP, audit exposed services, review firewall rules","brute_force":"Block source IP, enforce MFA, reset affected credentials","web_attack":"Update WAF rules, patch vulnerable endpoints, review logs","sql_injection":"Sanitise inputs, rotate DB credentials, audit schema","malware_detection":"Isolate host immediately, capture memory image, run forensic analysis","data_exfiltration":"Block egress channel, preserve forensic evidence, notify data owner","vulnerability_exploit":"Apply patch immediately, isolate affected host, scan for lateral movement"};
   var now=Date.now(); var alerts=[];
   for(var i=0;i<100;i++){
@@ -2117,7 +2148,7 @@ function getTeamNames(){
   try{stored=JSON.parse(localStorage.getItem("soc_members"));}catch(e){}
   if(stored&&stored.length) return stored.map(function(m){return m.name;});
   /* fallback — default analysts hardcoded as safety net */
-  return ["Prem Santhanam","Shivani PS","Himaja Vellanki","Mika Patel","Sahithi"];
+  return ["Alice Chen","Bob Martinez","Carol White","David Kim","Eve Johnson"];
 }
 
 function reassignAlerts(alertList){
@@ -2298,13 +2329,44 @@ function openAlertProfile(a){
     '</div>'+
     '</div>',
     [{label:"Save Profile",cls:"bp",fn:function(){
-      var id=a.alert_id; if(!overrides[id])overrides[id]={};
-      overrides[id].title=document.getElementById("ap-t").value;
-      overrides[id].description=document.getElementById("ap-d").value;
-      overrides[id].assignee=document.getElementById("ap-a").value;
-      overrides[id].status=document.getElementById("ap-s").value;
-      saveOv(); applyFilters(); closeModal();
-      addNotification("✅ Profile saved — "+id);
+      var id=a.alert_id;
+      var newTitle    = document.getElementById("ap-t").value;
+      var newDesc     = document.getElementById("ap-d").value;
+      var newAssignee = document.getElementById("ap-a").value;
+      var newStatus   = document.getElementById("ap-s").value;
+
+      // ── Optimistic local update (instant UI feedback) ──────────────────────
+      if(!overrides[id]) overrides[id]={};
+      overrides[id].title       = newTitle;
+      overrides[id].description = newDesc;
+      overrides[id].assignee    = newAssignee;
+      overrides[id].status      = newStatus;
+      // also patch the master alerts array so stats update immediately
+      var idx = alerts.findIndex(function(x){return x.alert_id===id;});
+      if(idx>=0){
+        if(newTitle)       alerts[idx].custom_title       = newTitle;
+        if(newDesc)        alerts[idx].custom_description = newDesc;
+        if(newAssignee)    alerts[idx].assigned_to        = newAssignee;
+        if(newStatus)      alerts[idx].status             = newStatus;
+      }
+      applyFilters(); closeModal();
+      addNotification("⏳ Saving — "+id+"…");
+
+      // ── Persist to backend (Supabase via API) ──────────────────────────────
+      fetch(API_BASE_URL+"/api/alerts/update",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({alert_id:id,title:newTitle,description:newDesc,
+                             assignee:newAssignee,status:newStatus})
+      }).then(function(r){return r.json();}).then(function(d){
+        if(d.ok){
+          addNotification("✅ Saved & synced — "+id);
+        } else {
+          addNotification("⚠️ Saved locally, sync failed — "+id);
+        }
+      }).catch(function(){
+        addNotification("⚠️ Saved locally, backend unreachable — "+id);
+      });
     }},{label:"Cancel",cls:"bs",fn:closeModal}]
   );
 }
@@ -2873,7 +2935,7 @@ function generateShiftReport(){
       '<div class="rpt-stripe"></div>'+
       '<div class="rpt-hdr-body">'+
         '<div>'+
-          '<div style="font-size:9px;font-family:var(--mono);color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">Security Operations Center · Shift Handover Report · Secured By Prem</div>'+
+          '<div style="font-size:9px;font-family:var(--mono);color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">Security Operations Center · Shift Handover Report</div>'+
           '<div style="font-size:22px;font-weight:700;letter-spacing:-.4px">Threat Assessment & Incident Analysis</div>'+
           '<div style="font-size:10px;color:var(--t3);margin-top:5px;font-family:var(--mono)">'+
             'Generated: '+new Date().toLocaleString()+' · NSL-KDD Dataset · CONFIDENTIAL'+
@@ -2948,7 +3010,7 @@ function generateShiftReport(){
        ["rs-low","Housekeeping",["Archive confirmed false positives","Review detection model accuracy trends","Document new attack patterns observed"]],
       ].map(function(s){return '<div style="margin-bottom:11px"><div class="rfind"><span class="rsev '+s[0]+'">'+s[1].toUpperCase()+'</span><ul style="margin-top:8px;padding-left:18px">'+s[2].map(function(i){return '<li style="font-size:11px;color:var(--t2);margin-bottom:4px">'+i+'</li>';}).join("")+'</ul></div></div>';}).join("")+
     '</div></div>'+
-    '<div style="text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);padding:8px 0">Generated '+new Date().toISOString()+' · SOC Operations Center · SECURED BY PREM · CONFIDENTIAL</div>';
+    '<div style="text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);padding:8px 0">Generated '+new Date().toISOString()+' · SOC Operations Center · NSL-KDD · CONFIDENTIAL</div>';
 
   // Wire up click handlers for report rows
   el.querySelectorAll(".rpt-alert-row").forEach(function(row){
@@ -3167,6 +3229,3 @@ function bindControls(){
 
 </body>
 </html>
-
-
-
