@@ -1157,21 +1157,38 @@ function initLiveFeed(cb){
 }
 function connectWS(){
   try{
+    console.log("[WS] Connecting to:", WS_URL);
     var ws=new WebSocket(WS_URL); liveFeedState.ws=ws;
-    ws.onopen=function(){liveFeedState.isConnected=true;updateLiveFeedUI();};
+    ws.onopen=function(){
+      liveFeedState.isConnected=true;updateLiveFeedUI();
+      console.log("[WS] ✅ Connected to backend WebSocket");
+    };
     ws.onmessage=function(e){
       try{var d=JSON.parse(e.data);
+        console.log("[WS] Message received:", d.type, d);
         if(d.type==="new_alert"&&d.alert){
           liveFeedState.recentAlerts=[d.alert].concat(liveFeedState.recentAlerts).slice(0,20);
           liveFeedState.totalToday++; updateLiveFeedUI();
           if(typeof addNotification==="function")addNotification("🚨 "+(d.alert.alert_type||"").replace(/_/g," ")+" on "+(d.alert.asset_name||"?"));
         }
-        if(d.type==="alert_updated"&&typeof onAlertUpdated==="function")onAlertUpdated(d);
-      }catch(err){}
+        if(d.type==="alert_updated"){
+          console.log("[WS] alert_updated received for", d.alert_id, "— calling onAlertUpdated");
+          if(typeof onAlertUpdated==="function") onAlertUpdated(d);
+          else console.warn("[WS] onAlertUpdated is not defined!");
+        }
+      }catch(err){console.error("[WS] Message parse error:", err);}
     };
-    ws.onerror=function(){liveFeedState.isConnected=false;updateLiveFeedUI();};
-    ws.onclose=function(){liveFeedState.isConnected=false;updateLiveFeedUI();setTimeout(connectWS,5000);};
-  }catch(err){liveFeedState.isConnected=false;updateLiveFeedUI();setTimeout(connectWS,5000);}
+    ws.onerror=function(e){liveFeedState.isConnected=false;updateLiveFeedUI();console.error("[WS] Error:", e);};
+    ws.onclose=function(e){
+      liveFeedState.isConnected=false;updateLiveFeedUI();
+      console.warn("[WS] Closed (code="+e.code+"). Reconnecting in 5s...");
+      setTimeout(connectWS,5000);
+    };
+  }catch(err){
+    liveFeedState.isConnected=false;updateLiveFeedUI();
+    console.error("[WS] connectWS threw:", err);
+    setTimeout(connectWS,5000);
+  }
 }
 function updateLiveFeedUI(){
   var dot=document.getElementById("liveFeedStatusDot"),txt=document.getElementById("liveFeedStatusText"),
@@ -1920,11 +1937,16 @@ try{members=JSON.parse(localStorage.getItem("soc_members")||"null");}catch(e){me
 
 // ── Real-time update handler — called by live-feed.js when alert_updated WS msg arrives ──
 function onAlertUpdated(d){
-  if(!d||!d.alert_id||!d.changes) return;
+  console.log("[SYNC] onAlertUpdated fired:", d);
+  if(!d||!d.alert_id||!d.changes){
+    console.warn("[SYNC] Invalid payload — missing alert_id or changes");
+    return;
+  }
   var chg=d.changes;
 
   // Patch master alerts array in-place
   var idx=alerts.findIndex(function(x){return x.alert_id===d.alert_id;});
+  console.log("[SYNC] Alert index in local array:", idx, "| Total alerts:", alerts.length);
   if(idx>=0){
     if(chg.status)               alerts[idx].status              = chg.status;
     if(chg.assigned_to)          alerts[idx].assigned_to         = chg.assigned_to;
@@ -1932,6 +1954,9 @@ function onAlertUpdated(d){
     if(chg.custom_description)   alerts[idx].custom_description   = chg.custom_description;
     if(chg.playbook_result)      alerts[idx].playbook_result      = chg.playbook_result;
     if(chg.history)              alerts[idx].history              = chg.history;
+    console.log("[SYNC] ✅ Patched alerts["+idx+"] — status:", alerts[idx].status);
+  } else {
+    console.warn("[SYNC] ⚠️ alert_id not found in local alerts array:", d.alert_id);
   }
 
   // Patch overrides so filter/status display stays in sync
@@ -1947,6 +1972,7 @@ function onAlertUpdated(d){
   var who = chg.assigned_to ? (" → "+chg.assigned_to) : "";
   var st  = chg.status      ? (" ["+chg.status+"]")   : "";
   addNotification("🔄 "+d.alert_id+st+who+" (updated by another analyst)");
+  console.log("[SYNC] ✅ Re-render complete — notification shown");
 }
 try{groups=JSON.parse(localStorage.getItem("soc_groups")||"null");}catch(e){groups=null;}
 try{overrides=JSON.parse(localStorage.getItem("soc_overrides")||"{}");}catch(e){overrides={};}
@@ -2353,19 +2379,27 @@ function openAlertProfile(a){
       addNotification("⏳ Saving — "+id+"…");
 
       // ── Persist to backend (Supabase via API) ──────────────────────────────
-      fetch(API_BASE_URL+"/api/alerts/update",{
+      var _url = API_BASE_URL+"/api/alerts/update";
+      var _body = {alert_id:id,title:newTitle,description:newDesc,assignee:newAssignee,status:newStatus};
+      console.log("[SAVE] POSTing to:", _url, "body:", _body);
+      fetch(_url,{
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({alert_id:id,title:newTitle,description:newDesc,
-                             assignee:newAssignee,status:newStatus})
-      }).then(function(r){return r.json();}).then(function(d){
+        body:JSON.stringify(_body)
+      }).then(function(r){
+        console.log("[SAVE] Response status:", r.status);
+        return r.json();
+      }).then(function(d){
+        console.log("[SAVE] Response body:", d);
         if(d.ok){
           addNotification("✅ Saved & synced — "+id);
         } else {
           addNotification("⚠️ Saved locally, sync failed — "+id);
+          console.warn("[SAVE] Backend returned error:", d);
         }
-      }).catch(function(){
+      }).catch(function(err){
         addNotification("⚠️ Saved locally, backend unreachable — "+id);
+        console.error("[SAVE] Fetch failed:", err);
       });
     }},{label:"Cancel",cls:"bs",fn:closeModal}]
   );
