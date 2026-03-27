@@ -1935,6 +1935,34 @@ var currentPage=1, PAGE_SIZE=50;
 var members=null,groups=null;
 try{members=JSON.parse(localStorage.getItem("soc_members")||"null");}catch(e){members=null;}
 
+// ── Active tab detector — reads from DOM view visibility (most reliable source) ──
+function getActiveTab(){
+  var order=["alerts","analytics","team","attack-map","shift-report","threat-intel"];
+  // Primary: check .ntab.active button
+  var btn=document.querySelector(".ntab.active");
+  if(btn){ var v=btn.getAttribute("data-v"); if(v) return v; }
+  // Fallback: check which view div is NOT hidden
+  for(var i=0;i<order.length;i++){
+    var el=document.getElementById("v-"+order[i]);
+    if(el && !el.classList.contains("hidden")) return order[i];
+  }
+  return "alerts"; // default
+}
+
+// ── Re-render the currently visible tab with fresh alert data ──────────────
+function syncActiveTab(){
+  var v = getActiveTab();
+  console.log("[SYNC] syncActiveTab() — rendering tab:", v);
+  try{
+    if(v==="alerts")       { applyFilters(); }
+    else if(v==="analytics")   { renderAnalytics(); }
+    else if(v==="team")         { renderTeam(); }
+    else if(v==="attack-map")   { updateAttackMap(alerts); }
+    else if(v==="shift-report") { generateShiftReport(); }
+    else if(v==="threat-intel") { renderThreatIntel().catch(function(e){console.error("[SYNC] threatintel:",e);}); }
+  }catch(e){ console.error("[SYNC] syncActiveTab error on tab '"+v+"':", e); }
+}
+
 // ── Real-time update handler — called by live-feed.js when alert_updated WS msg arrives ──
 function onAlertUpdated(d){
   console.log("[SYNC] onAlertUpdated fired:", d);
@@ -1964,41 +1992,16 @@ function onAlertUpdated(d){
   if(chg.status)      overrides[d.alert_id].status   = chg.status;
   if(chg.assigned_to) overrides[d.alert_id].assignee = chg.assigned_to;
 
-  // ── Re-render ALL tabs that are affected by alert data changes ──────────────
+  // ── Re-render all affected views ──────────────────────────────────────────
 
   // Recompute stats from local alerts[] so KPI cards are immediately accurate
-  if(typeof recomputeStats==="function") recomputeStats();
+  recomputeStats();
 
-  // Always update the alerts tab (it may be hidden but data must be correct)
-  applyFilters();
-
-  // Always update the KPI stat cards
-  if(typeof renderStats==="function") renderStats();
+  // Re-render KPI cards
+  renderStats();
 
   // Re-render whichever tab is currently visible
-  try{
-    // Find active tab — check both .ntab.active and the visible .view element
-    var _av = document.querySelector(".ntab.active");
-    var _v  = _av ? _av.getAttribute("data-v") : null;
-
-    // Fallback: detect by which view div is NOT hidden
-    if(!_v){
-      var _views=["alerts","analytics","team","attack-map","shift-report","threat-intel"];
-      for(var _vi=0;_vi<_views.length;_vi++){
-        var _vel=document.getElementById("v-"+_views[_vi]);
-        if(_vel && !_vel.classList.contains("hidden")){ _v=_views[_vi]; break; }
-      }
-    }
-
-    console.log("[SYNC] Active tab detected:", _v, "— re-rendering...");
-    if(_v==="alerts")       { /* already done via applyFilters() above */ }
-    else if(_v==="analytics")   { renderAnalytics(); }
-    else if(_v==="team")         { renderTeam(); }
-    else if(_v==="attack-map")   { updateAttackMap(alerts); }
-    else if(_v==="shift-report") { generateShiftReport(); }
-    else if(_v==="threat-intel") { renderThreatIntel().catch(function(e){console.error("[SYNC] threatintel:",e);}); }
-    else { console.warn("[SYNC] Unknown active tab:", _v); }
-  }catch(_syncTabErr){ console.error("[SYNC] tab re-render error:",_syncTabErr); }
+  syncActiveTab();
 
   // Notify the current user
   var who = chg.assigned_to ? (" → "+chg.assigned_to) : "";
@@ -2439,26 +2442,10 @@ function openAlertProfile(a){
         if(newAssignee)    alerts[idx].assigned_to        = newAssignee;
         if(newStatus)      alerts[idx].status             = newStatus;
       }
-      // Re-render alerts tab + active tab immediately on this machine
-      if(typeof recomputeStats==="function") recomputeStats();
-      applyFilters();
-      if(typeof renderStats==="function") renderStats();
-      try{
-        var _av2=document.querySelector(".ntab.active");
-        var _v2=_av2?_av2.getAttribute("data-v"):null;
-        if(!_v2){
-          var _vlist=["alerts","analytics","team","attack-map","shift-report","threat-intel"];
-          for(var _vli=0;_vli<_vlist.length;_vli++){
-            var _vle=document.getElementById("v-"+_vlist[_vli]);
-            if(_vle&&!_vle.classList.contains("hidden")){_v2=_vlist[_vli];break;}
-          }
-        }
-        if(_v2==="analytics")   { try{renderAnalytics();}catch(e){console.error(e);} }
-        else if(_v2==="team")    { try{renderTeam();}catch(e){console.error(e);} }
-        else if(_v2==="attack-map")   { try{updateAttackMap(alerts);}catch(e){console.error(e);} }
-        else if(_v2==="shift-report") { try{generateShiftReport();}catch(e){console.error(e);} }
-        else if(_v2==="threat-intel") { renderThreatIntel().catch(function(e){console.error(e);}); }
-      }catch(e){console.error("[OPT] tab render error:",e);}
+      // Re-render immediately on this machine
+      recomputeStats();
+      renderStats();
+      syncActiveTab();
       closeModal();
       addNotification("⏳ Saving — "+id+"…");
 
@@ -3291,6 +3278,11 @@ function exportCSV(){
 function switchView(v){
   document.querySelectorAll(".main > .view").forEach(function(el){el.classList.add("hidden");});
   var el=document.getElementById("v-"+v); if(el)el.classList.remove("hidden");
+  // Keep .ntab.active in sync so WS sync can detect the active tab reliably
+  document.querySelectorAll(".ntab").forEach(function(t){
+    if(t.getAttribute("data-v")===v) t.classList.add("active");
+    else t.classList.remove("active");
+  });
   try{
     if(v==="analytics")renderAnalytics();
     else if(v==="team")renderTeam();
