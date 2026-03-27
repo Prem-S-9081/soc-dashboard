@@ -1964,9 +1964,27 @@ function onAlertUpdated(d){
   if(chg.status)      overrides[d.alert_id].status   = chg.status;
   if(chg.assigned_to) overrides[d.alert_id].assignee = chg.assigned_to;
 
-  // Re-render silently — no page reset, no scroll jump
+  // ── Re-render ALL tabs that are affected by alert data changes ──────────────
+
+  // Always update the alerts tab (it may be hidden but data must be correct)
   applyFilters();
+
+  // Always update the KPI stat cards
   if(typeof renderStats==="function") renderStats(typeof stats!=="undefined"?stats:{});
+
+  // Re-render whichever tab is currently visible
+  try{
+    var _av = document.querySelector(".ntab.active");
+    if(_av){
+      var _v = _av.getAttribute("data-v");
+      console.log("[SYNC] Active tab:", _v, "— re-rendering...");
+      if(_v==="analytics")   { try{renderAnalytics();}  catch(e){console.error("[SYNC] analytics:",e);} }
+      if(_v==="team")         { try{renderTeam();}       catch(e){console.error("[SYNC] team:",e);} }
+      if(_v==="attack-map")   { try{updateAttackMap(alerts);}catch(e){console.error("[SYNC] attackmap:",e);} }
+      if(_v==="shift-report") { try{generateShiftReport();}catch(e){console.error("[SYNC] shiftreport:",e);} }
+      if(_v==="threat-intel") { renderThreatIntel().catch(function(e){console.error("[SYNC] threatintel:",e);}); }
+    }
+  }catch(_syncTabErr){ console.warn("[SYNC] tab re-render error:",_syncTabErr); }
 
   // Notify the current user
   var who = chg.assigned_to ? (" → "+chg.assigned_to) : "";
@@ -2375,7 +2393,21 @@ function openAlertProfile(a){
         if(newAssignee)    alerts[idx].assigned_to        = newAssignee;
         if(newStatus)      alerts[idx].status             = newStatus;
       }
-      applyFilters(); closeModal();
+      // Re-render alerts tab + active tab immediately on this machine
+      applyFilters();
+      if(typeof renderStats==="function") renderStats(typeof stats!=="undefined"?stats:{});
+      try{
+        var _av2=document.querySelector(".ntab.active");
+        if(_av2){
+          var _v2=_av2.getAttribute("data-v");
+          if(_v2==="analytics")   { try{renderAnalytics();}catch(e){} }
+          if(_v2==="team")         { try{renderTeam();}catch(e){} }
+          if(_v2==="attack-map")   { try{updateAttackMap(alerts);}catch(e){} }
+          if(_v2==="shift-report") { try{generateShiftReport();}catch(e){} }
+          if(_v2==="threat-intel") { renderThreatIntel().catch(function(e){}); }
+        }
+      }catch(e){}
+      closeModal();
       addNotification("⏳ Saving — "+id+"…");
 
       // ── Persist to backend (Supabase via API) ──────────────────────────────
