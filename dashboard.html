@@ -1966,25 +1966,39 @@ function onAlertUpdated(d){
 
   // ── Re-render ALL tabs that are affected by alert data changes ──────────────
 
+  // Recompute stats from local alerts[] so KPI cards are immediately accurate
+  if(typeof recomputeStats==="function") recomputeStats();
+
   // Always update the alerts tab (it may be hidden but data must be correct)
   applyFilters();
 
   // Always update the KPI stat cards
-  if(typeof renderStats==="function") renderStats(typeof stats!=="undefined"?stats:{});
+  if(typeof renderStats==="function") renderStats();
 
   // Re-render whichever tab is currently visible
   try{
+    // Find active tab — check both .ntab.active and the visible .view element
     var _av = document.querySelector(".ntab.active");
-    if(_av){
-      var _v = _av.getAttribute("data-v");
-      console.log("[SYNC] Active tab:", _v, "— re-rendering...");
-      if(_v==="analytics")   { try{renderAnalytics();}  catch(e){console.error("[SYNC] analytics:",e);} }
-      if(_v==="team")         { try{renderTeam();}       catch(e){console.error("[SYNC] team:",e);} }
-      if(_v==="attack-map")   { try{updateAttackMap(alerts);}catch(e){console.error("[SYNC] attackmap:",e);} }
-      if(_v==="shift-report") { try{generateShiftReport();}catch(e){console.error("[SYNC] shiftreport:",e);} }
-      if(_v==="threat-intel") { renderThreatIntel().catch(function(e){console.error("[SYNC] threatintel:",e);}); }
+    var _v  = _av ? _av.getAttribute("data-v") : null;
+
+    // Fallback: detect by which view div is NOT hidden
+    if(!_v){
+      var _views=["alerts","analytics","team","attack-map","shift-report","threat-intel"];
+      for(var _vi=0;_vi<_views.length;_vi++){
+        var _vel=document.getElementById("v-"+_views[_vi]);
+        if(_vel && !_vel.classList.contains("hidden")){ _v=_views[_vi]; break; }
+      }
     }
-  }catch(_syncTabErr){ console.warn("[SYNC] tab re-render error:",_syncTabErr); }
+
+    console.log("[SYNC] Active tab detected:", _v, "— re-rendering...");
+    if(_v==="alerts")       { /* already done via applyFilters() above */ }
+    else if(_v==="analytics")   { renderAnalytics(); }
+    else if(_v==="team")         { renderTeam(); }
+    else if(_v==="attack-map")   { updateAttackMap(alerts); }
+    else if(_v==="shift-report") { generateShiftReport(); }
+    else if(_v==="threat-intel") { renderThreatIntel().catch(function(e){console.error("[SYNC] threatintel:",e);}); }
+    else { console.warn("[SYNC] Unknown active tab:", _v); }
+  }catch(_syncTabErr){ console.error("[SYNC] tab re-render error:",_syncTabErr); }
 
   // Notify the current user
   var who = chg.assigned_to ? (" → "+chg.assigned_to) : "";
@@ -2159,6 +2173,38 @@ function setDemoMode(demo){
 }
 
 // ── Stats Cards ───────────────────────────────────────────────────────────────
+// ── Recompute stats locally from alerts[] — called after every WS patch ──────
+// This keeps KPI cards accurate without waiting for the 30s loadData() poll.
+function recomputeStats(){
+  if(!alerts||!alerts.length) return;
+  var sc={new:0,investigating:0,resolved:0,false_positive:0,escalated:0};
+  var tc={}, ac={}, wl={}, risks=[];
+  alerts.forEach(function(a){
+    var st = (overrides[a.alert_id]&&overrides[a.alert_id].status)||a.status||"new";
+    sc[st] = (sc[st]||0)+1;
+    tc[a.alert_type] = (tc[a.alert_type]||0)+1;
+    ac[a.asset_name||"?"] = (ac[a.asset_name||"?"]||0)+1;
+    var n = (overrides[a.alert_id]&&overrides[a.alert_id].assignee)||a.assigned_to||"Unassigned";
+    wl[n] = (wl[n]||0)+1;
+    if(a.risk_score) risks.push(+a.risk_score);
+  });
+  var avgRisk = risks.length ? Math.round(risks.reduce(function(a,b){return a+b;},0)/risks.length) : 0;
+  // Patch the global stats object in-place so renderStats() picks it up
+  if(!stats) stats={};
+  stats.total_alerts_processed   = alerts.length;
+  stats.alerts_investigating      = sc.investigating||0;
+  stats.alerts_resolved           = sc.resolved||0;
+  stats.false_positives_filtered  = sc.false_positive||0;
+  stats.alerts_escalated          = sc.escalated||0;
+  stats.time_saved_hours          = Math.round(alerts.length*0.35*10)/10;
+  stats.avg_risk_score            = avgRisk;
+  stats.status_counts             = sc;
+  stats.type_counts               = tc;
+  stats.asset_counts              = ac;
+  stats.analyst_workload          = wl;
+  // model_accuracy stays as-is from backend
+}
+
 function renderStats(){
   if(!stats)return;
   setText("s-tot",stats.total_alerts_processed||0);
@@ -2394,19 +2440,25 @@ function openAlertProfile(a){
         if(newStatus)      alerts[idx].status             = newStatus;
       }
       // Re-render alerts tab + active tab immediately on this machine
+      if(typeof recomputeStats==="function") recomputeStats();
       applyFilters();
-      if(typeof renderStats==="function") renderStats(typeof stats!=="undefined"?stats:{});
+      if(typeof renderStats==="function") renderStats();
       try{
         var _av2=document.querySelector(".ntab.active");
-        if(_av2){
-          var _v2=_av2.getAttribute("data-v");
-          if(_v2==="analytics")   { try{renderAnalytics();}catch(e){} }
-          if(_v2==="team")         { try{renderTeam();}catch(e){} }
-          if(_v2==="attack-map")   { try{updateAttackMap(alerts);}catch(e){} }
-          if(_v2==="shift-report") { try{generateShiftReport();}catch(e){} }
-          if(_v2==="threat-intel") { renderThreatIntel().catch(function(e){}); }
+        var _v2=_av2?_av2.getAttribute("data-v"):null;
+        if(!_v2){
+          var _vlist=["alerts","analytics","team","attack-map","shift-report","threat-intel"];
+          for(var _vli=0;_vli<_vlist.length;_vli++){
+            var _vle=document.getElementById("v-"+_vlist[_vli]);
+            if(_vle&&!_vle.classList.contains("hidden")){_v2=_vlist[_vli];break;}
+          }
         }
-      }catch(e){}
+        if(_v2==="analytics")   { try{renderAnalytics();}catch(e){console.error(e);} }
+        else if(_v2==="team")    { try{renderTeam();}catch(e){console.error(e);} }
+        else if(_v2==="attack-map")   { try{updateAttackMap(alerts);}catch(e){console.error(e);} }
+        else if(_v2==="shift-report") { try{generateShiftReport();}catch(e){console.error(e);} }
+        else if(_v2==="threat-intel") { renderThreatIntel().catch(function(e){console.error(e);}); }
+      }catch(e){console.error("[OPT] tab render error:",e);}
       closeModal();
       addNotification("⏳ Saving — "+id+"…");
 
