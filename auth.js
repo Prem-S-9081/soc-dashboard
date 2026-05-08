@@ -1,8 +1,8 @@
 // ===== AUTH MODULE =====
 // All helpers prefixed with _a to avoid any global name conflicts
 var DEFAULT_AUTH_USERS=[
-  {id:"admin",username:"admin",password:"Securedbyprem@123",name:"Administrator",role:"Admin",shift:"24/7",color:"av-e",email:"admin@sp.com",isAdmin:true,active:true},
-  {id:"m1",username:"prem.ps",password:"Prem@123",name:"Prem Santhanam",role:"Senior Analyst",shift:"Day",color:"av-a",email:"prem@sp.com",isAdmin:false,active:true},
+  {id:"admin",username:"admin",password:"Securedbyprem@123",name:"Secured By Prem - Admin",role:"Admin",shift:"24/7",color:"av-e",email:"admin@sp.com",isAdmin:true,active:true},
+  {id:"m1",username:"prem.ps",password:"Prem@123",name:"Prem Santhanam",role:"Senior Analyst",shift:"Day",color:"av-a",email:"prem@sp.com",isAdmin:true,active:true},
   {id:"m2",username:"shivani.ps",password:"Shivani@123",name:"Shivani PS",role:"SOC Manager",shift:"Day",color:"av-d",email:"shivani@sp.com",isAdmin:false,active:true},
   {id:"m3",username:"himaja.vellanki",password:"Himaja@123",name:"Himaja Vellanki",role:"Malware Analyst",shift:"Night",color:"av-b",email:"himaja@sp.com",isAdmin:false,active:true},
   {id:"m4",username:"mika.patel",password:"Mika@123",name:"Mika Patel",role:"Tier 2 Analyst",shift:"Weekend",color:"av-c",email:"mika@sp.com",isAdmin:false,active:true},
